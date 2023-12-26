@@ -22,19 +22,26 @@ pipeline {
                 }
             }
         }
-        stage("Test Application"){
-            steps{
+        stage("Test Application") {
+            steps {
                 script { 
                     sh "mvn test"
                 }
             }
         }
-        stage("SonarQube analysis"){
+        stage("SonarQube analysis") {
             steps {
                 script {
                     withSonarQubeEnv(credentialsId: 'Sonar-token') {
                         sh "mvn sonar:sonar"
                     }
+                }
+            }
+        }
+        stage("Quality Gate") {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false , credentialsId: 'Sonar-token'
                 }
             }
         }
